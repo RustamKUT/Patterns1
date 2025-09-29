@@ -1,10 +1,7 @@
 plugins {
     id 'java'
     id 'io.freefair.lombok' version '5.3.0'
-<<<<<<< HEAD
     id 'io.qameta.allure' version '2.11.2'
-=======
->>>>>>> eba9838ec15cd079a8cbec207f0663f584f4b668
 }
 
 group 'ru.netology'
