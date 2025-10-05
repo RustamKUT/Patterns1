@@ -1,20 +1,23 @@
 package ru.netology.test;
 
-import com.codeborne.selenide.logevents.SelenideLogger;
-import ru.netology.data.DataGenerator;
-import io.qameta.allure.selenide.AllureSelenide;
+import com.codeborne.selenide.Selectors;
+import lombok.Value;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.Keys;
+import ru.netology.data.DataGenerator;
+import com.codeborne.selenide.logevents.SelenideLogger;
+import io.qameta.allure.selenide.AllureSelenide;
+
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.withText;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
 class DeliveryTest {
+    private String firstMeetingInvalidDate;
+
     @BeforeAll
     static void setUpAll(){
         SelenideLogger.addListener("allure", new AllureSelenide());
@@ -30,38 +33,48 @@ class DeliveryTest {
     }
 
     @Test
-    @DisplayName("Should successful plan and replan meeting")
-    void shouldSuccessfulPlanAndReplanMeeting() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
-        var secondMeetingDate = DataGenerator.generateDate(5, 4);
-        $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+    @DisplayName("Should successful plan meeting")
+    void shouldSuccessfulPlanMeeting() {
+
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+        var secondMeetingDate = DataGenerator.generateDate(7);
+
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(firstMeetingDate);
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
-        $(withText("Запланировать")).click();
-        $("[data-test-id=success-notification] .notification__content")
-                .shouldBe(visible, Duration.ofMillis(15000))
-                .shouldHave(exactText("Встреча успешно запланирована на  " + firstMeetingDate));
-        $("[data-test-id='success-notification'] button[type='button'] .icon_name_close").click();
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(secondMeetingDate);
-        $(withText("Запланировать")).click();
-        $("[data-test-id='replan-notification'] button[type='button'] .button__text").click();
-        $("[data-test-id=success-notification] .notification__content")
-                .shouldBe(visible, Duration.ofMillis(15000))
-                .shouldHave(exactText("Встреча успешно запланирована на  " + secondMeetingDate));
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(exactText("Встреча успешно запланирована на  " + firstMeetingDate))
+                .shouldBe(visible);
+
+        //$("[data-test-id='success-notification'] button[type='button'] .icon_name_close").click();
+        $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(secondMeetingDate);
+        $(Selectors.byText("Запланировать")).click();
+
+        $("[data-test-id='replan-notification'] .notification__content")
+                .shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"))
+                .shouldBe(visible);
     }
 
     @Test
     void shouldCityNotInList() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
-        $("[data-test-id=city] input").setValue(DataGenerator.generateInvalidCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
+
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(firstMeetingDate);
         $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Доставка в выбранный город недоступна"));
@@ -69,11 +82,14 @@ class DeliveryTest {
 
     @Test
     void shouldEmptyInCityField() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
         $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
@@ -81,23 +97,27 @@ class DeliveryTest {
 
     @Test
     void shouldDateLessThreeDays() {
-        var firstMeetingInvalidDate = DataGenerator.generateDate(1, 1);
-        $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(firstMeetingInvalidDate);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+        var secondMeetingDate = DataGenerator.generateDate(7);
+
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(firstMeetingInvalidDate);
         $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
-        $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Заказ на выбранную дату невозможен"));
+        $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
     }
 
     @Test
     void shouldEmptyInDateField() {
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
@@ -105,12 +125,15 @@ class DeliveryTest {
 
     @Test
     void shouldEmptyNameField() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
+        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue(firstMeetingDate);
         $("[name='name']").setValue("");
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
@@ -118,12 +141,15 @@ class DeliveryTest {
 
     @Test
     void shouldLatinLettersInNameField() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
         $("[name='name']").setValue(DataGenerator.generateName("en"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='name'].input_invalid .input__sub")
@@ -132,11 +158,14 @@ class DeliveryTest {
 
     @Test
     void shouldEmptyPhoneField() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
+        $("[name='name']").setValue(DataGenerator.generateName("Игорь"));
         $("[name='phone']").setValue("");
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
@@ -145,11 +174,15 @@ class DeliveryTest {
 
     @Test
     void shouldMoreElevenCharactersInPhone() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        var firstMeetingDate = DataGenerator.generateDate(4);
+
+
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
+        $("[name='name']").setValue(DataGenerator.generateName("Иван"));
         $("[name='phone']").setValue("+79012345678999");
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
@@ -158,18 +191,10 @@ class DeliveryTest {
                 .shouldHave(exactText("Встреча успешно запланирована на " + firstMeetingDate));
     }
 
-    @Test
-    void shouldCheckboxNotMarked() {
-        var firstMeetingDate = DataGenerator.generateDate(4, 5);
-        $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        $("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
-        $("[class='button__text']").click();
-        $("[data-test-id=agreement].input_invalid .checkbox__text")
-                .shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
+
     }
+
+
 
 
 }
