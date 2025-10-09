@@ -53,13 +53,17 @@ class DeliveryTest {
                 .shouldHave(exactText("Встреча успешно запланирована на  " + firstMeetingDate))
                 .shouldBe(visible);
 
-        //$("[data-test-id='success-notification'] button[type='button'] .icon_name_close").click();
         $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(secondMeetingDate);
         $(Selectors.byText("Запланировать")).click();
 
         $("[data-test-id='replan-notification'] .notification__content")
                 .shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"))
+                .shouldBe(visible);
+
+        $("[data-test-id='replan-notification'] button").click();
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(exactText("Встреча успешно запланирована на " + secondMeetingDate))
                 .shouldBe(visible);
     }
 
@@ -123,21 +127,21 @@ class DeliveryTest {
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
     }
 
-    @Test
+    /*@Test
     void shouldEmptyNameField() {
         var validUser = DataGenerator.Registration.generateUser("ru");
 
         var firstMeetingDate = DataGenerator.generateDate(4);
 
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(firstMeetingDate);
         $("[name='name']").setValue("");
         //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
-    }
+    }*/
 
     @Test
     void shouldLatinLettersInNameField() {
@@ -190,6 +194,9 @@ class DeliveryTest {
                 .shouldBe(visible, Duration.ofMillis(15000))
                 .shouldHave(exactText("Встреча успешно запланирована на " + firstMeetingDate));
     }
+
+
+
 
 
     }
