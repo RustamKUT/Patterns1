@@ -74,11 +74,11 @@ class DeliveryTest {
 
         var firstMeetingDate = DataGenerator.generateDate(4);
 
-        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=city] input").setValue(DataGenerator.generateInvalidCity());
         $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Доставка в выбранный город недоступна"));
@@ -90,10 +90,11 @@ class DeliveryTest {
 
         var firstMeetingDate = DataGenerator.generateDate(4);
 
+
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
@@ -109,8 +110,8 @@ class DeliveryTest {
         $("[data-test-id=city] input").setValue(validUser.getCity());
         $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(firstMeetingInvalidDate);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
-        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
@@ -120,14 +121,15 @@ class DeliveryTest {
     void shouldEmptyInDateField() {
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[name='name']").setValue(DataGenerator.generateName("ru"));
+        //$("[data-test-id='name'] input").setValue(validUser.getName());
+        //$("[data-test-id='phone'] input").setValue(validUser.getPhone());
         //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
     }
 
-    /*@Test
+    @Test
     void shouldEmptyNameField() {
         var validUser = DataGenerator.Registration.generateUser("ru");
 
@@ -136,24 +138,24 @@ class DeliveryTest {
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(firstMeetingDate);
-        $("[name='name']").setValue("");
-        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        $("[data-test-id='name'] input").setValue("");
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
-    }*/
+    }
 
     @Test
     void shouldLatinLettersInNameField() {
-        var validUser = DataGenerator.Registration.generateUser("ru");
+        var validUser = DataGenerator.Registration.generateUser("en");
 
         var firstMeetingDate = DataGenerator.generateDate(4);
 
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("en"));
-        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='name'].input_invalid .input__sub")
@@ -169,7 +171,7 @@ class DeliveryTest {
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("Игорь"));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[name='phone']").setValue("");
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
@@ -186,7 +188,7 @@ class DeliveryTest {
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
-        $("[name='name']").setValue(DataGenerator.generateName("Иван"));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[name='phone']").setValue("+79012345678999");
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();

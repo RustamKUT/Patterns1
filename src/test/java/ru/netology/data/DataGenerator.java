@@ -23,7 +23,7 @@ public class DataGenerator {
     public static String generateCity() {
         String[] city = new String[]{"Москва", "Санкт-Петербург", "Калининград", "Казань", "Нижний Новгород",
                 "Екатеринбург", "Ярославль", "Владивосток"};
-        return city[random.nextInt(city.length)];
+        return city[new Random().nextInt(city.length)];
     }
 
     public static String generateInvalidCity() {
@@ -50,9 +50,7 @@ public class DataGenerator {
         return faker.phoneNumber().phoneNumber();
     }
 
-    public static String generateName(String ru) {
-        return ru;
-    }
+
 
     public static class Registration {
         private static Faker faker;
@@ -71,11 +69,5 @@ public class DataGenerator {
         String city;
         String name;
         String phone;
-
-
-
-
-
-
     }
 }
