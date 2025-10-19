@@ -32,6 +32,8 @@ class DeliveryTest {
         open("http://localhost:9999");
     }
 
+
+    // Следует успешно планировать встречу
     @Test
     @DisplayName("Should successful plan meeting")
     void shouldSuccessfulPlanMeeting() {
@@ -67,6 +69,8 @@ class DeliveryTest {
                 .shouldBe(visible);
     }
 
+
+    //Должен город отсутствовать в списке
     @Test
     void shouldCityNotInList() {
 
@@ -84,6 +88,8 @@ class DeliveryTest {
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Доставка в выбранный город недоступна"));
     }
 
+
+    // в поле город должно быть пусто
     @Test
     void shouldEmptyInCityField() {
         var validUser = DataGenerator.Registration.generateUser("ru");
@@ -100,6 +106,8 @@ class DeliveryTest {
         $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
+
+    // должно пройти менее трех дней
     @Test
     void shouldDateLessThreeDays() {
         var validUser = DataGenerator.Registration.generateUser("ru");
@@ -117,23 +125,30 @@ class DeliveryTest {
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
     }
 
+
+    // Поле дата должно быть пустым
     @Test
     void shouldEmptyInDateField() {
-        $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
+        var validUser = DataGenerator.Registration.generateUser("ru");
+
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
+        $("[data-test-id='date'] input").setValue("");
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
 
     }
 
+
+    // должно быть пустым поле имени
     @Test
     void shouldEmptyNameField() {
         var validUser = DataGenerator.Registration.generateUser("ru");
 
         var firstMeetingDate = DataGenerator.generateDate(4);
 
-        $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
+        $("[data-test-id=city] input").setValue(validUser.getCity());
         $("[data-test-id='date'] input").press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(firstMeetingDate);
         $("[data-test-id='name'] input").setValue("");
@@ -143,13 +158,15 @@ class DeliveryTest {
         $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
+
+    // латинские буквы в поле для имени
     @Test
     void shouldLatinLettersInNameField() {
         var validUser = DataGenerator.Registration.generateUser("en");
 
         var firstMeetingDate = DataGenerator.generateDate(4);
 
-        $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
+        $("[data-test-id=city] input").setValue(validUser.getCity());
         $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] .input__control").setValue(firstMeetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
@@ -160,6 +177,7 @@ class DeliveryTest {
                 .shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
+    // должно быть пустое поле для телефона
     @Test
     void shouldEmptyPhoneField() {
         var validUser = DataGenerator.Registration.generateUser("ru");
@@ -176,6 +194,8 @@ class DeliveryTest {
         $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
+
+    // должно быть больше одиннадцати символов в телефоне
     @Test
     void shouldMoreElevenCharactersInPhone() {
         var validUser = DataGenerator.Registration.generateUser("ru");
@@ -195,11 +215,7 @@ class DeliveryTest {
                 .shouldHave(exactText("Встреча успешно запланирована на " + firstMeetingDate));
     }
 
-
-
-
-
-    }
+}
 
 
 
