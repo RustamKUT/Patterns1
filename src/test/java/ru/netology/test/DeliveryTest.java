@@ -120,13 +120,11 @@ class DeliveryTest {
     @Test
     void shouldEmptyInDateField() {
         $("[data-test-id=city] input").setValue(DataGenerator.generateCity());
-        $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        //$("[data-test-id='name'] input").setValue(validUser.getName());
-        //$("[data-test-id='phone'] input").setValue(validUser.getPhone());
-        //$("[name='phone']").setValue(DataGenerator.generatePhone("ru"));
+        $("[data-test-id='date'] .input__control").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id=agreement]").click();
         $("[class='button__text']").click();
         $("[data-test-id='date'] .input_invalid .input__sub").shouldHave(exactText("Неверно введена дата"));
+
     }
 
     @Test
